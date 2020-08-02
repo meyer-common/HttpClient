@@ -1,8 +1,7 @@
-﻿using Meyer.Common.HttpClient.Policies;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
-namespace Meyer.Common.HttpClient
+namespace Meyer.Common.HttpClient.Policies
 {
     /// <summary>
     /// Represents a default implementation which does not do any retry or circuit breaker implementation
@@ -15,7 +14,7 @@ namespace Meyer.Common.HttpClient
         /// <typeparam name="R">The type of the response body</typeparam>
         /// <param name="request">The request to wrap in policy</param>
         /// <returns>Returns the response once the policy has completed</returns>
-        public async Task<RestClientResponse<R>> Execute<R>(Func<Task<RestClientResponse<R>>> request)
+        public async Task<HttpClientResponse<R>> Execute<R>(Func<Task<HttpClientResponse<R>>> request)
         {
             return await request();
         }

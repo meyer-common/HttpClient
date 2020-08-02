@@ -45,6 +45,8 @@ namespace Meyer.Common.HttpClient.TokenProvider
 
                     this.Token = JsonConvert.DeserializeObject<Token>(responseContent, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
+                    this.Token.Scheme = "Bearer";
+
                     return this.Token;
                 }
             }

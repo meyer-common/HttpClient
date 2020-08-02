@@ -16,7 +16,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        Task<RestClientResponse<R>> HttpGet<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
+        Task<HttpClientResponse<R>> HttpGet<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
 
         /// <summary>
         /// Performs an Http POST request
@@ -28,7 +28,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        Task<RestClientResponse<R>> HttpPost<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
+        Task<HttpClientResponse<R>> HttpPost<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
 
         /// <summary>
         /// Performs an Http PUT request
@@ -40,7 +40,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        Task<RestClientResponse<R>> HttpPut<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
+        Task<HttpClientResponse<R>> HttpPut<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
 
         /// <summary>
         /// Performs an Http PATCH request
@@ -52,7 +52,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        Task<RestClientResponse<R>> HttpPatch<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
+        Task<HttpClientResponse<R>> HttpPatch<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
 
         /// <summary>
         /// Performs an Http DELETE request
@@ -62,6 +62,6 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        Task<RestClientResponse<R>> HttpDelete<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
+        Task<HttpClientResponse<R>> HttpDelete<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null);
     }
 }

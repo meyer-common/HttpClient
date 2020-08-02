@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Meyer.Common.HttpClient
@@ -17,29 +14,17 @@ namespace Meyer.Common.HttpClient
     public class RestClient : IRestClient
     {
         private System.Net.Http.HttpClient client;
-        private RestClientOptions options;
+        private HttpClientOptions options;
 
         /// <summary>
         /// Instantiates a new instance of RestClient
         /// </summary>
         /// <param name="options">Options to be used for making the requests</param>
-        public RestClient(RestClientOptions options)
+        public RestClient(HttpClientOptions options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
 
-            var handler = new HttpClientHandler();
-
-            if (options.Proxy != null && handler.SupportsProxy)
-                handler.Proxy = options.Proxy;
-
-            if (options.UseGzipCompression && handler.SupportsAutomaticDecompression)
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            this.client = new System.Net.Http.HttpClient(handler)
-            {
-                BaseAddress = new Uri(options.BaseEndpoint + "/"),
-                Timeout = options.Timeout
-            };
+            this.client = HttpClientFactory.CreateHttpClientFrom(options);
         }
 
         /// <summary>
@@ -50,7 +35,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<RestClientResponse<R>> HttpGet<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> HttpGet<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(HttpMethod.Get, route), parameters, null, headers));
         }
@@ -65,7 +50,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<RestClientResponse<R>> HttpPost<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> HttpPost<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(HttpMethod.Post, route), parameters, body, headers));
         }
@@ -80,7 +65,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<RestClientResponse<R>> HttpPut<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> HttpPut<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(HttpMethod.Put, route), parameters, body, headers));
         }
@@ -95,7 +80,7 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<RestClientResponse<R>> HttpPatch<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> HttpPatch<T, R>(string route, T body, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(new HttpMethod("PATCH"), route), parameters, body, headers));
         }
@@ -108,14 +93,14 @@ namespace Meyer.Common.HttpClient
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<RestClientResponse<R>> HttpDelete<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> HttpDelete<R>(string route, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(HttpMethod.Delete, route), parameters, null, headers));
         }
 
-        private async Task<RestClientResponse<T>> Send<T>(HttpRequestMessage request, IEnumerable<KeyValuePair<string, string>> parameters, object body, IEnumerable<KeyValuePair<string, string>> headers = null)
+        private async Task<HttpClientResponse<T>> Send<T>(HttpRequestMessage request, IEnumerable<KeyValuePair<string, string>> parameters, object body, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
-            request.RequestUri = new Uri($"{request.RequestUri}/{this.BuildQueryString(parameters)}".Trim('/'), UriKind.Relative);
+            request.RequestUri = new Uri($"{request.RequestUri}/{parameters?.ToQueryString()}".Trim('/'), UriKind.Relative);
 
             await this.SetHeaders(request, headers);
 
@@ -126,14 +111,14 @@ namespace Meyer.Common.HttpClient
             if (!response.IsSuccessStatusCode)
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
-                    return new RestClientResponse<T>(response, default(T));
+                    return new HttpClientResponse<T>(response, default(T));
 
                 throw new RestClientException(response);
             }
 
             try
             {
-                return new RestClientResponse<T>(response, JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()));
+                return new HttpClientResponse<T>(response, JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync()));
             }
             catch (Exception e)
             {
@@ -141,34 +126,14 @@ namespace Meyer.Common.HttpClient
             }
         }
 
-        private string BuildQueryString(IEnumerable<KeyValuePair<string, string>> parameters)
-        {
-            string toReturn = string.Empty;
-            if (parameters != null)
-            {
-                var counter = 0;
-                foreach (var queryParameter in parameters)
-                {
-                    if (counter == 0)
-                    {
-                        toReturn += $"?{queryParameter.Key}={Uri.EscapeDataString(queryParameter.Value)}";
-                    }
-                    else
-                    {
-                        toReturn += $"&{queryParameter.Key}={Uri.EscapeDataString(queryParameter.Value)}";
-                    }
-
-                    counter++;
-                }
-            }
-
-            return toReturn;
-        }
-
         private async Task SetHeaders(HttpRequestMessage request, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             if (this.options.TokenProvider != null)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", (await this.options.TokenProvider.GetToken()).AccessToken);
+            {
+                var token = await this.options.TokenProvider.GetToken();
+
+                request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, token.AccessToken);
+            }
 
             if (headers != null)
             {
@@ -183,32 +148,15 @@ namespace Meyer.Common.HttpClient
             {
                 var jsonContent = JsonConvert.SerializeObject(body, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                if (this.options.UseGzipCompression)
+                if (this.options.Compression != null)
                 {
-                    request.Content = new ByteArrayContent(GzipCompress(jsonContent));
+                    request.Content = this.options.Compression.Compress(jsonContent);
                     request.Content.Headers.Add("Content-Encoding", "gzip");
                 }
                 else
-                {
                     request.Content = new StringContent(jsonContent);
-                }
+
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            }
-        }
-
-        private static byte[] GzipCompress(string data)
-        {
-            using (var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(data)))
-            {
-                using (var compressed = new MemoryStream())
-                {
-                    using (var gzip = new GZipStream(compressed, CompressionMode.Compress))
-                    {
-                        gzip.Write(dataStream.ToArray(), 0, (int)dataStream.Length);
-                    }
-
-                    return compressed.ToArray();
-                }
             }
         }
     }

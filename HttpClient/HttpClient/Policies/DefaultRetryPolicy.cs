@@ -28,7 +28,7 @@ namespace Meyer.Common.HttpClient.Policies
         /// <typeparam name="R">The type of the response body</typeparam>
         /// <param name="request">The request to wrap in policy</param>
         /// <returns>Returns the response once the policy has completed</returns>
-        public async Task<RestClientResponse<R>> Execute<R>(Func<Task<RestClientResponse<R>>> request)
+        public async Task<HttpClientResponse<R>> Execute<R>(Func<Task<HttpClientResponse<R>>> request)
         {
             return await Polly.Policy
                 .Handle<IOException>()

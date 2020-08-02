@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Reflection;
 
 namespace Meyer.Common.HttpClient.TokenProvider
 {
@@ -46,6 +47,11 @@ namespace Meyer.Common.HttpClient.TokenProvider
         /// </summary>
         [JsonProperty("refresh_token")]
         public string RefreshToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the auth scheme
+        /// </summary>
+        public string Scheme { get; set; }
 
         /// <summary>
         /// Checks whether the token has expired or is close to expiring

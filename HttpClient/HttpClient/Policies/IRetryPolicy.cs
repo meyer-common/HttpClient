@@ -14,6 +14,6 @@ namespace Meyer.Common.HttpClient.Policies
         /// <typeparam name="R">The type of the response body</typeparam>
         /// <param name="request">The request to wrap in policy</param>
         /// <returns>Returns the response once the policy has completed</returns>
-        Task<RestClientResponse<R>> Execute<R>(Func<Task<RestClientResponse<R>>> request);
+        Task<HttpClientResponse<R>> Execute<R>(Func<Task<HttpClientResponse<R>>> request);
     }
 }

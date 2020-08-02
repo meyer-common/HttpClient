@@ -1,4 +1,5 @@
-﻿using Meyer.Common.HttpClient.Policies;
+﻿using Meyer.Common.HttpClient.Compression;
+using Meyer.Common.HttpClient.Policies;
 using Meyer.Common.HttpClient.TokenProvider;
 using System;
 using System.Net;
@@ -8,8 +9,10 @@ namespace Meyer.Common.HttpClient
     /// <summary>
     /// Represents configurations for the RestClient behavior
     /// </summary>
-    public class RestClientOptions
+    public class HttpClientOptions
     {
+        private IRetryPolicy retryPolicy = new NoRetryPolicy();
+
         /// <summary>
         /// Gets or sets the base absolute url
         /// </summary>
@@ -19,8 +22,6 @@ namespace Meyer.Common.HttpClient
         /// Gets or sets the provider used for token management
         /// </summary>
         public ITokenProvider TokenProvider { get; set; }
-
-        private IRetryPolicy retryPolicy = new NoRetryPolicy();
 
         /// <summary>
         /// Gets or sets the provider for retry and circuit breaker management. Defaults to none
@@ -32,9 +33,9 @@ namespace Meyer.Common.HttpClient
         }
 
         /// <summary>
-        /// Gets or sets whether to use gzip compression when sending requests
+        /// Gets or sets the compression when sending requests
         /// </summary>
-        public bool UseGzipCompression { get; set; }
+        public ICompression Compression { get; set; }
 
         /// <summary>
         /// Gets or sets a proxy to use when sending requests

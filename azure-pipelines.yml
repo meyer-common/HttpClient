@@ -1,4 +1,4 @@
-name: 1.0.0$(rev:.r)
+name: 2.0.0$(rev:.r)
 pool:
   vmImage: 'ubuntu-16.04'
 trigger:

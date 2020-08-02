@@ -6,7 +6,7 @@ namespace Meyer.Common.HttpClient
     /// Represents a response from the http request
     /// </summary>
     /// <typeparam name="T">The System.Type used to deserialize the response body</typeparam>
-    public class RestClientResponse<T>
+    public class HttpClientResponse<T>
     {
         /// <summary>
         /// Gets the full http response details
@@ -23,7 +23,7 @@ namespace Meyer.Common.HttpClient
         /// </summary>
         /// <param name="httpResponseMessage">The full http response details</param>
         /// <param name="result">The deserialized response body</param>
-        public RestClientResponse(HttpResponseMessage httpResponseMessage, T result)
+        public HttpClientResponse(HttpResponseMessage httpResponseMessage, T result)
         {
             this.HttpResponseMessage = httpResponseMessage;
             this.Result = result;
