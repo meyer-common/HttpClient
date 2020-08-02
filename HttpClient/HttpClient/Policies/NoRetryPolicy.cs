@@ -15,7 +15,7 @@ namespace Meyer.Common.HttpClient
         /// <typeparam name="R">The type of the response body</typeparam>
         /// <param name="request">The request to wrap in policy</param>
         /// <returns>Returns the response once the policy has completed</returns>
-        public async Task<RestClientResponse<T>> Execute<T>(Func<Task<RestClientResponse<T>>> request)
+        public async Task<RestClientResponse<R>> Execute<R>(Func<Task<RestClientResponse<R>>> request)
         {
             return await request();
         }
