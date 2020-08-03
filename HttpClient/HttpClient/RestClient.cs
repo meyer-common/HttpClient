@@ -19,12 +19,13 @@ namespace Meyer.Common.HttpClient
         /// <summary>
         /// Instantiates a new instance of RestClient
         /// </summary>
+        /// <param name="baseEndpoint">Sets the base absolute url</param>
         /// <param name="options">Options to be used for making the requests</param>
-        public RestClient(HttpClientOptions options)
+        public RestClient(string baseEndpoint, HttpClientOptions options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
 
-            this.client = HttpClientFactory.CreateHttpClientFrom(options);
+            this.client = HttpClientFactory.CreateHttpClientFrom(baseEndpoint, options);
         }
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace Meyer.Common.HttpClient
 
         private async Task<HttpClientResponse<T>> Send<T>(HttpRequestMessage request, IEnumerable<KeyValuePair<string, string>> parameters, object body, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
-            request.RequestUri = new Uri($"{request.RequestUri}/{parameters?.ToQueryString()}".Trim('/'), UriKind.Relative);
+            request.RequestUri = new Uri($"{request.RequestUri}{parameters?.ToQueryString()}".Trim('/'), UriKind.Relative);
 
             await this.SetHeaders(request, headers);
 
@@ -113,7 +114,7 @@ namespace Meyer.Common.HttpClient
                 if (response.StatusCode == HttpStatusCode.NotFound)
                     return new HttpClientResponse<T>(response, default(T));
 
-                throw new RestClientException(response);
+                throw new HttpClientException(response);
             }
 
             try
@@ -122,7 +123,7 @@ namespace Meyer.Common.HttpClient
             }
             catch (Exception e)
             {
-                throw new RestClientException(e, response);
+                throw new HttpClientException(e, response);
             }
         }
 

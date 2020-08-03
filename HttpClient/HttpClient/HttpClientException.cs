@@ -6,7 +6,7 @@ namespace Meyer.Common.HttpClient
     /// <summary>
     /// Represents an exception from a rest client request
     /// </summary>
-    public class RestClientException : Exception
+    public class HttpClientException : Exception
     {
         /// <summary>
         /// Gets the full response information
@@ -14,20 +14,20 @@ namespace Meyer.Common.HttpClient
         public HttpResponseMessage HttpResponseMessage { get; }
 
         /// <summary>
-        /// Instantiates a new instance of RestClientException
+        /// Instantiates a new instance of HttpClientException
         /// </summary>
         /// <param name="e">The inner exception</param>
         /// <param name="httpResponseMessage">The full response object</param>
-        public RestClientException(Exception e, HttpResponseMessage httpResponseMessage) : base("See inner exception", e)
+        public HttpClientException(Exception e, HttpResponseMessage httpResponseMessage) : base("See inner exception", e)
         {
             this.HttpResponseMessage = httpResponseMessage;
         }
 
         /// <summary>
-        /// Instantiates a new instance of RestClientException with no inner exception
+        /// Instantiates a new instance of HttpClientException with no inner exception
         /// </summary>
         /// <param name="httpResponseMessage">The full response object</param>
-        public RestClientException(HttpResponseMessage httpResponseMessage) : base($"HTTP request error: {httpResponseMessage.StatusCode}")
+        public HttpClientException(HttpResponseMessage httpResponseMessage) : base($"HTTP request error: {httpResponseMessage.StatusCode}")
         {
             this.HttpResponseMessage = httpResponseMessage;
         }

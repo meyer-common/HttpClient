@@ -19,7 +19,7 @@ namespace Meyer.Common.HttpClient
         public T Result { get; }
 
         /// <summary>
-        /// Instantiates a new instance of RestClientResponse
+        /// Instantiates a new instance of HttpClientResponse
         /// </summary>
         /// <param name="httpResponseMessage">The full http response details</param>
         /// <param name="result">The deserialized response body</param>

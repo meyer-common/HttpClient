@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace Meyer.Common.HttpClient.TokenProvider
 {
     /// <summary>
-    /// Represents a token provider for getting a token via password grant_type
+    /// Represents a token provider for getting a token via client_credentials grant_type
     /// </summary>
-    public class ResourceOwnerFlow : Flow, ITokenProvider
+    public class ClientCredentialsTokenProvider : Flow, ITokenProvider
     {
         /// <summary>
         /// Gets the client id for the token request
@@ -19,51 +19,35 @@ namespace Meyer.Common.HttpClient.TokenProvider
         public string ClientSecret { get; }
 
         /// <summary>
-        /// Gets the username for the token request
-        /// </summary>
-        public string Username { get; }
-
-        /// <summary>
-        /// Gets the password for the user for the token request
-        /// </summary>
-        public string Password { get; }
-
-        /// <summary>
         /// Gets the requested scopes for the token request
         /// </summary>
         public string Scopes { get; }
 
         /// <summary>
-        /// Instantiates a new instance of ResourceOwnerFlow
+        /// Instantiates a new instance of ClientCredentialsTokenProvider
         /// </summary>
-        /// <param name="tokenEndpoint">The address to the token server</param>
+        /// <param name="tokenEndpoint">The base address to the idenetity server</param>
         /// <param name="clientId">The client id for the token request</param>
         /// <param name="clientSecret">The client secret for the token request</param>
-        /// <param name="username">The username for the token request</param>
-        /// <param name="password">The password for the user for the token request</param>
         /// <param name="scopes">The requested scopes for the token request</param>
-        public ResourceOwnerFlow(string tokenEndpoint, string clientId, string clientSecret, string username, string password, string scopes) : base(tokenEndpoint)
+        public ClientCredentialsTokenProvider(string tokenEndpoint, string clientId, string clientSecret, string scopes) : base(tokenEndpoint)
         {
             this.ClientId = clientId;
             this.ClientSecret = clientSecret;
-            this.Username = username;
-            this.Password = password;
             this.Scopes = scopes;
         }
 
         /// <summary>
-        /// Returns a token with the provided client, user, and scopes
+        /// Returns a token with the provided client and scopes
         /// </summary>
         /// <returns>Returns a token</returns>
         public async Task<Token> GetToken()
         {
             return await RequestToken(new Dictionary<string, string>
             {
-                { "grant_type", "password" },
+                { "grant_type", "client_credentials" },
                 { "client_id", this.ClientId },
                 { "client_secret", this.ClientSecret },
-                { "username", this.Username },
-                { "password", this.Password },
                 { "scope", this.Scopes }
             });
         }

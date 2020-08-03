@@ -7,16 +7,11 @@ using System.Net;
 namespace Meyer.Common.HttpClient
 {
     /// <summary>
-    /// Represents configurations for the RestClient behavior
+    /// Represents configurations for client behavior
     /// </summary>
     public class HttpClientOptions
     {
         private IRetryPolicy retryPolicy = new NoRetryPolicy();
-
-        /// <summary>
-        /// Gets or sets the base absolute url
-        /// </summary>
-        public string BaseEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the provider used for token management

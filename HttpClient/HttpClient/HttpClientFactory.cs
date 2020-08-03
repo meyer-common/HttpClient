@@ -6,7 +6,7 @@ namespace Meyer.Common.HttpClient
 {
     internal static class HttpClientFactory
     {
-        internal static System.Net.Http.HttpClient CreateHttpClientFrom(HttpClientOptions options)
+        internal static System.Net.Http.HttpClient CreateHttpClientFrom(string baseEndpoint, HttpClientOptions options)
         {
             var handler = new HttpClientHandler();
 
@@ -18,7 +18,7 @@ namespace Meyer.Common.HttpClient
 
             return new System.Net.Http.HttpClient(handler)
             {
-                BaseAddress = new Uri(options.BaseEndpoint + "/"),
+                BaseAddress = new Uri(baseEndpoint + "/"),
                 Timeout = options.Timeout
             };
         }

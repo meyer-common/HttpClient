@@ -38,7 +38,7 @@ namespace Meyer.Common.HttpClient.Policies
                     e.Status == WebExceptionStatus.ConnectFailure ||
                     e.Status == WebExceptionStatus.Pending)
                 .Or<TaskCanceledException>()
-                .Or<RestClientException>(e =>
+                .Or<HttpClientException>(e =>
                     e.HttpResponseMessage.StatusCode == HttpStatusCode.InternalServerError ||
                     e.HttpResponseMessage.StatusCode == HttpStatusCode.ServiceUnavailable ||
                     e.HttpResponseMessage.StatusCode == HttpStatusCode.GatewayTimeout

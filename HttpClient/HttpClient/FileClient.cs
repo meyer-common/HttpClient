@@ -9,60 +9,56 @@ using System.Threading.Tasks;
 
 namespace Meyer.Common.HttpClient
 {
-    public class FileClient
+    /// <summary>
+    /// Represents an implementation of a client for performing http requests against upload endpoints
+    /// </summary>
+    public class FileUploadClient : IFileUploadClient
     {
         private System.Net.Http.HttpClient client;
         private HttpClientOptions options;
 
         /// <summary>
-        /// Instantiates a new instance of FileClient
+        /// Instantiates a new instance of FileUploadClient
         /// </summary>
+        /// <param name="baseEndpoint">Sets the base absolute url</param>
         /// <param name="options">Options to be used for making the requests</param>
-        public FileClient(HttpClientOptions options)
+        public FileUploadClient(string baseEndpoint, HttpClientOptions options)
         {
             this.options = options ?? throw new ArgumentNullException(nameof(options));
 
-            this.client = HttpClientFactory.CreateHttpClientFrom(options);
+            this.client = HttpClientFactory.CreateHttpClientFrom(baseEndpoint, options);
         }
 
         /// <summary>
-        /// Performs an Http POST request
+        /// Uploads a file to an http endpoint
         /// </summary>
-        /// <typeparam name="T">The type of the request body</typeparam>
-        /// <typeparam name="R">The type of the response body</typeparam>
+        /// <typeparam name="R"> The type of the response body</typeparam>
         /// <param name="route">The route to add to the base address (ex: entites/1234)</param>
-        /// <param name="file">The body of the request</param>
+        /// <param name="file">The file to upload</param>
         /// <param name="parameters">Optional query parameters to add to the request</param>
         /// <param name="headers">Optional headers to add to the request</param>
         /// <returns>Returns the parsed body as type R</returns>
-        public async Task<HttpClientResponse<R>> HttpPost<T, R>(string route, FileInfo file, IEnumerable<KeyValuePair<string, string>> additionalContent = null, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<HttpClientResponse<R>> Upload<R>(string route, FileInfo file, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
-            if (!file.Exists)
-                throw new FileNotFoundException($"File {file.FullName} not found.");
-
-            var request = new HttpRequestMessage(HttpMethod.Post, route);
-
-            using (var form = new MultipartFormDataContent())
+            using (MultipartFormDataContent form = new MultipartFormDataContent())
             {
-                using (var content = new ByteArrayContent(File.ReadAllBytes(file.FullName)))
+                StreamContent streamContent;
+                using (var fileStream = file.OpenRead())
                 {
-                    content.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                    streamContent = new StreamContent(fileStream);
 
-                    form.Add(content, "file", file.Name);
+                    streamContent.Headers.Add("Content-Type", "application/octet-stream");
+                    streamContent.Headers.Add("Content-Disposition", string.Format("form-data; name=\"file\"; filename=\"{0}\"", file.Name));
+                    form.Add(streamContent, "file", file.Name);
 
-                    foreach (var item in additionalContent)
-                        form.Add(new StringContent(item.Value), item.Key);
-
-                    request.Content = content;
+                    return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(new HttpRequestMessage(HttpMethod.Post, route) { Content = form }, parameters, headers));
                 }
             }
-
-            return await this.options.RetryPolicy.Execute(async () => await this.Send<R>(request, parameters, headers));
         }
 
         private async Task<HttpClientResponse<T>> Send<T>(HttpRequestMessage request, IEnumerable<KeyValuePair<string, string>> parameters, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
-            request.RequestUri = new Uri($"{request.RequestUri}/{parameters?.ToQueryString()}".Trim('/'), UriKind.Relative);
+            request.RequestUri = new Uri($"{request.RequestUri}{parameters?.ToQueryString()}", UriKind.Relative);
 
             await this.SetHeaders(request, headers);
 
@@ -73,7 +69,7 @@ namespace Meyer.Common.HttpClient
                 if (response.StatusCode == HttpStatusCode.NotFound)
                     return new HttpClientResponse<T>(response, default(T));
 
-                throw new RestClientException(response);
+                throw new HttpClientException(response);
             }
 
             try
@@ -82,7 +78,7 @@ namespace Meyer.Common.HttpClient
             }
             catch (Exception e)
             {
-                throw new RestClientException(e, response);
+                throw new HttpClientException(e, response);
             }
         }
 

@@ -5,7 +5,7 @@ namespace Meyer.Common.HttpClient.TokenProvider
     /// <summary>
     /// Represents a token provider for a static value
     /// </summary>
-    public class StaticToken : ITokenProvider
+    public class StaticTokenProvider : ITokenProvider
     {
         private Token token;
 

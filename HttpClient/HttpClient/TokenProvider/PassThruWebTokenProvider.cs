@@ -7,15 +7,15 @@ namespace Meyer.Common.HttpClient.TokenProvider
     /// <summary>
     /// Represents a token provider where the token is reused from the incoming request
     /// </summary>
-    public class PassThruWebToken : ITokenProvider
+    public class PassThruWebTokenProvider : ITokenProvider
     {
         private IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
-        /// Instantiates a new instance of PassThruWebToken
+        /// Instantiates a new instance of PassThruWebTokenProvider
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context</param>
-        public PassThruWebToken(IHttpContextAccessor httpContextAccessor)
+        public PassThruWebTokenProvider(IHttpContextAccessor httpContextAccessor)
         {
             this.httpContextAccessor = httpContextAccessor;
         }
@@ -29,7 +29,7 @@ namespace Meyer.Common.HttpClient.TokenProvider
             var headers = httpContextAccessor.HttpContext.Request.Headers;
 
             if (!headers.ContainsKey("Authorization"))
-                throw new RestClientException(new Exception("Authorization not present on incoming request"), null);
+                throw new HttpClientException(new Exception("Authorization not present on incoming request"), null);
 
             return await Task.FromResult(new Token
             {
