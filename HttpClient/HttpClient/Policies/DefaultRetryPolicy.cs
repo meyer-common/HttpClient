@@ -41,10 +41,11 @@ namespace Meyer.Common.HttpClient.Policies
                 .Or<HttpClientException>(e =>
                     e.HttpResponseMessage.StatusCode == HttpStatusCode.InternalServerError ||
                     e.HttpResponseMessage.StatusCode == HttpStatusCode.ServiceUnavailable ||
-                    e.HttpResponseMessage.StatusCode == HttpStatusCode.GatewayTimeout
+                    e.HttpResponseMessage.StatusCode == HttpStatusCode.GatewayTimeout ||
+                    (int)e.HttpResponseMessage.StatusCode == 429
                 )
                 .WaitAndRetryAsync(retryCount, retryAttempt =>
-                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt) + 1)
+                    TimeSpan.FromSeconds(retryAttempt)
                 )
                 .ExecuteAsync(request);
         }
