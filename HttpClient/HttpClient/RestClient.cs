@@ -133,7 +133,10 @@ namespace Meyer.Common.HttpClient
             {
                 var token = await this.options.TokenProvider.GetToken();
 
-                request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, token.AccessToken);
+                if (string.IsNullOrWhiteSpace(token.Scheme))
+                    request.Headers.Add("Authorization", token.AccessToken);
+                else
+                    request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, token.AccessToken);
             }
 
             if (headers != null)
