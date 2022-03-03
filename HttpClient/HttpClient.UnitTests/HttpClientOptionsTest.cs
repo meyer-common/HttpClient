@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace Meyer.Common.HttpClient.Tests.Unit;
+namespace Meyer.Common.HttpClient.UnitTests;
 
 [TestClass]
 public class HttpClientOptionsTest

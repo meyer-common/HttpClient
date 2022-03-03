@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace Meyer.Common.HttpClient.Tests.Unit;
+namespace Meyer.Common.HttpClient.UnitTests;
 
 [TestClass]
 public class QueryStringBuilderTest

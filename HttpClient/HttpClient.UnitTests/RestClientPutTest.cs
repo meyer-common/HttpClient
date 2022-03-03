@@ -9,13 +9,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Meyer.Common.HttpClient.Tests.Unit;
+namespace Meyer.Common.HttpClient.UnitTests;
 
 [TestClass]
-public class RestClientPatchTest
+public class RestClientPutTest
 {
     [TestMethod]
-    public async Task RestClient_CanPatchAsync()
+    public async Task RestClient_CanPutAsync()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -38,7 +38,7 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPatch<dynamic, dynamic>("route", new
+        var response = await restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         });
@@ -51,7 +51,7 @@ public class RestClientPatchTest
     }
 
     [TestMethod]
-    public async Task RestClient_CanPatch_WithNoResponse()
+    public async Task RestClient_CanPut_WithNoResponse()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -74,7 +74,7 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPatch<dynamic, dynamic>("route", new
+        var response = await restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         });
@@ -86,9 +86,8 @@ public class RestClientPatchTest
             ItExpr.IsAny<CancellationToken>());
     }
 
-
     [TestMethod]
-    public async Task RestClient_CanPatch_WithHeaders()
+    public async Task RestClient_CanPut_WithHeaders()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -111,7 +110,7 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPatch<dynamic, dynamic>("route", new
+        var response = await restClient.HttpPut<dynamic, dynamic>("route", new
             {
                 aaa = "aaa"
             },
@@ -127,7 +126,7 @@ public class RestClientPatchTest
     }
 
     [TestMethod]
-    public async Task RestClient_CanPatch_WithParameters()
+    public async Task RestClient_CanPut_WithParameters()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -150,7 +149,7 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPatch<dynamic, dynamic>("route", new
+        var response = await restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         },
@@ -167,7 +166,7 @@ public class RestClientPatchTest
     }
 
     [TestMethod]
-    public async Task RestClient_CanPatch_NotFound()
+    public async Task RestClient_CanPut_NotFound()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -179,7 +178,8 @@ public class RestClientPatchTest
 
         messageHandler
             .Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage)
             .Verifiable();
 
@@ -190,14 +190,14 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPatch<dynamic, dynamic>("route", new
+        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         }));
     }
 
     [TestMethod]
-    public async Task RestClient_CanPatch_Exception()
+    public async Task RestClient_CanPut_Exception()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -220,14 +220,14 @@ public class RestClientPatchTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPatch<dynamic, dynamic>("route", new
+        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         }));
     }
 
     [TestMethod]
-    public async Task RestClient_CanPatch_WithTokenProvider()
+    public async Task RestClient_CanPut_WithTokenProvider()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -262,7 +262,7 @@ public class RestClientPatchTest
             TokenProvider = tokenProvider.Object
         });
 
-        var response = await restClient.HttpPatch<dynamic, dynamic>("route", new
+        var response = await restClient.HttpPut<dynamic, dynamic>("route", new
         {
             aaa = "aaa"
         });

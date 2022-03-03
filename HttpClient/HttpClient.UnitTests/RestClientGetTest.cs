@@ -9,13 +9,19 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Meyer.Common.HttpClient.Tests.Unit;
+namespace Meyer.Common.HttpClient.UnitTests;
 
 [TestClass]
-public class RestClientPostTest
+public class RestClientGetTest
 {
     [TestMethod]
-    public async Task RestClient_CanPostAsync()
+    public void RestClient_NullOptions_ThrowsException()
+    {
+        Assert.ThrowsException<ArgumentNullException>(() => new RestClient(new System.Net.Http.HttpClient(), null));
+    }
+
+    [TestMethod]
+    public async Task RestClient_CanGetAsync()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -38,56 +44,13 @@ public class RestClientPostTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        });
+        var response = await restClient.HttpGet<dynamic>("route");
 
         Assert.AreSame(responseMessage, response.HttpResponseMessage);
-
-        messageHandler.Protected().Verify("SendAsync", Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(x => x.Content.ReadAsStringAsync().Result == @"{""aaa"":""aaa""}"),
-            ItExpr.IsAny<CancellationToken>());
     }
 
     [TestMethod]
-    public async Task RestClient_CanPost_WithNoResponse()
-    {
-        var messageHandler = new Mock<HttpMessageHandler>();
-
-        var responseMessage = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(string.Empty)
-        };
-
-        messageHandler
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(responseMessage)
-            .Verifiable();
-
-        var httpClient = new System.Net.Http.HttpClient(messageHandler.Object)
-        {
-            BaseAddress = new Uri("http://test.com/")
-        };
-
-        var restClient = new RestClient(httpClient, new HttpClientOptions());
-
-        var response = await restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        });
-
-        Assert.AreSame(responseMessage, response.HttpResponseMessage);
-
-        messageHandler.Protected().Verify("SendAsync", Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(x => x.Content.ReadAsStringAsync().Result == @"{""aaa"":""aaa""}"),
-            ItExpr.IsAny<CancellationToken>());
-    }
-
-    [TestMethod]
-    public async Task RestClient_CanPost_WithHeaders()
+    public async Task RestClient_CanGet_WithHeaders()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -110,11 +73,7 @@ public class RestClientPostTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        },
-        headers: new Dictionary<string, string>
+        var response = await restClient.HttpGet<dynamic>("route", headers: new Dictionary<string, string>
         {
             ["aaa"] = "aaa"
         });
@@ -126,7 +85,7 @@ public class RestClientPostTest
     }
 
     [TestMethod]
-    public async Task RestClient_CanPost_WithParameters()
+    public async Task RestClient_CanGet_WithParameters()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -149,11 +108,7 @@ public class RestClientPostTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        var response = await restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        },
-        new Dictionary<string, string>
+        var response = await restClient.HttpGet<dynamic>("route", new Dictionary<string, string>
         {
             ["aaa"] = "aaa"
         });
@@ -166,7 +121,7 @@ public class RestClientPostTest
     }
 
     [TestMethod]
-    public async Task RestClient_CanPost_NotFound()
+    public async Task RestClient_CanGet_NotFound()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -189,14 +144,14 @@ public class RestClientPostTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        }));
+        var response = await restClient.HttpGet<dynamic>("route");
+
+        Assert.AreSame(responseMessage, response.HttpResponseMessage);
+        Assert.IsNull(response.Result);
     }
 
     [TestMethod]
-    public async Task RestClient_CanPost_Exception()
+    public async Task RestClient_CanGet_Exception()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -219,14 +174,11 @@ public class RestClientPostTest
 
         var restClient = new RestClient(httpClient, new HttpClientOptions());
 
-        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        }));
+        await Assert.ThrowsExceptionAsync<HttpClientException>(() => restClient.HttpGet<dynamic>("route"));
     }
 
     [TestMethod]
-    public async Task RestClient_CanPost_WithTokenProvider()
+    public async Task RestClient_CanGet_WithTokenProvider()
     {
         var messageHandler = new Mock<HttpMessageHandler>();
 
@@ -261,10 +213,7 @@ public class RestClientPostTest
             TokenProvider = tokenProvider.Object
         });
 
-        var response = await restClient.HttpPost<dynamic, dynamic>("route", new
-        {
-            aaa = "aaa"
-        });
+        var response = await restClient.HttpGet<dynamic>("route");
 
         Assert.AreSame(responseMessage, response.HttpResponseMessage);
 

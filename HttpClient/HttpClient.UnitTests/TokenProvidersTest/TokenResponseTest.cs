@@ -1,7 +1,7 @@
 ﻿using Meyer.Common.HttpClient.TokenProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Meyer.Common.HttpClient.Tests.Unit.TokenProvidersTest;
+namespace Meyer.Common.HttpClient.UnitTests.TokenProvidersTest;
 
 [TestClass]
 public class TokenResponseTest

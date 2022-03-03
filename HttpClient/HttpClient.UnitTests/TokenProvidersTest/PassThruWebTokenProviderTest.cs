@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Threading.Tasks;
 
-namespace Meyer.Common.HttpClient.Tests.Unit.TokenProvidersTest;
+namespace Meyer.Common.HttpClient.UnitTests.TokenProvidersTest;
 
 [TestClass]
 public class PassThruWebTokenProviderTest
