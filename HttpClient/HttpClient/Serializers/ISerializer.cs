@@ -2,6 +2,9 @@
 
 namespace Meyer.Common.HttpClient.Serializers;
 
+/// <summary>
+/// Interface outlines methods for serializing and deserializing strategies for an http request
+/// </summary>
 public interface ISerializer
 {
     /// <summary>

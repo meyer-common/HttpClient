@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace Meyer.Common.HttpClient.Serializers;
 
+/// <summary>
+/// Represents a serializer for compressed content
+/// </summary>
 public class GzipJsonSerializer : ISerializer
 {
     /// <summary>
