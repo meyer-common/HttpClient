@@ -1,32 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Meyer.Common.HttpClient
+namespace Meyer.Common.HttpClient;
+
+public static class QueryStringBuilder
 {
-    internal static class QueryStringBuilder
+    public static string ToQueryString(this IEnumerable<KeyValuePair<string, string>> parameters)
     {
-        internal static string ToQueryString(this IEnumerable<KeyValuePair<string, string>> parameters)
-        {
-            string toReturn = string.Empty;
-            if (parameters != null)
-            {
-                var counter = 0;
-                foreach (var queryParameter in parameters)
-                {
-                    if (counter == 0)
-                    {
-                        toReturn += $"?{queryParameter.Key}={Uri.EscapeDataString(queryParameter.Value)}";
-                    }
-                    else
-                    {
-                        toReturn += $"&{queryParameter.Key}={Uri.EscapeDataString(queryParameter.Value)}";
-                    }
+        if (parameters == null)
+            return string.Empty;
 
-                    counter++;
-                }
-            }
-
-            return toReturn;
-        }
+        return "?" + string.Join("&", parameters
+                .Select(x => $"{x.Key}={Uri.EscapeDataString(x.Value)}"))
+            .Trim('&');
     }
 }
