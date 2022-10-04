@@ -32,11 +32,11 @@ steps:
     command: test
     projects: '**/*[Tt]ests/*.csproj'
     arguments: '--configuration Release'
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   displayName: Push
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   inputs:
-    command: push
+    command: 'push'
     packagesToPush: 'artifacts/*.nupkg'
-    nuGetFeedType: external
-    publishFeedCredentials: nuget.org
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'nuget.org'
