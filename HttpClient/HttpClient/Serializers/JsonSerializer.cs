@@ -19,7 +19,10 @@ public class JsonSerializer : ISerializer
     /// <returns>Response body as type T</returns>
     public T Deserialize<T>(string body)
     {
-        return System.Text.Json.JsonSerializer.Deserialize<T>(body);
+        return System.Text.Json.JsonSerializer.Deserialize<T>(body, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
     }
 
     /// <summary>

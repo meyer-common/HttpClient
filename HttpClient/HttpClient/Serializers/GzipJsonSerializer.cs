@@ -20,7 +20,10 @@ public class GzipJsonSerializer : ISerializer
     /// <returns>Response body as type T</returns>
     public T Deserialize<T>(string body)
     {
-        return System.Text.Json.JsonSerializer.Deserialize<T>(body);
+        return System.Text.Json.JsonSerializer.Deserialize<T>(body, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
     }
 
     /// <summary>
@@ -34,8 +37,7 @@ public class GzipJsonSerializer : ISerializer
 
         var content = System.Text.Json.JsonSerializer.Serialize(body, new JsonSerializerOptions
         { 
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNameCaseInsensitive = true
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
 
         using var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
