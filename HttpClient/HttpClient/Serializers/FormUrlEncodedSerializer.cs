@@ -33,7 +33,8 @@ public class FormUrlEncodedSerializer : ISerializer
 
         var json = System.Text.Json.JsonSerializer.Serialize(body, new JsonSerializerOptions
         { 
-            NumberHandling = JsonNumberHandling.WriteAsString 
+            NumberHandling = JsonNumberHandling.WriteAsString,
+            PropertyNameCaseInsensitive = true
         });
         var dictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 

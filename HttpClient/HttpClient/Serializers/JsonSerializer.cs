@@ -33,7 +33,8 @@ public class JsonSerializer : ISerializer
 
         var content = System.Text.Json.JsonSerializer.Serialize(body, new JsonSerializerOptions 
         { 
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull 
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true
         });
 
         request.Content = new StringContent(content);

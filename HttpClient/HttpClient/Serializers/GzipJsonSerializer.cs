@@ -34,7 +34,8 @@ public class GzipJsonSerializer : ISerializer
 
         var content = System.Text.Json.JsonSerializer.Serialize(body, new JsonSerializerOptions
         { 
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull 
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true
         });
 
         using var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
