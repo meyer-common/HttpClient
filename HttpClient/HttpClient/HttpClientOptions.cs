@@ -67,4 +67,11 @@ public class HttpClientOptions
     /// Gets or sets the level to log full request and responses. Defaults to None
     /// </summary>
     public LogLevel LogLevel { get; set; } = LogLevel.None;
+
+    /// <summary>
+    /// Gets or sets whether to throw an HttpClientException when the response is an unsuccessful status code.
+    /// Unlike the HttpClient, enabling this does not clear the HttpResponseMessage
+    /// Defaults to true. Note: 404 is always considered successful for GET
+    /// </summary>
+    public bool EnsureSuccessStatusCode { get; set; } = true;
 }

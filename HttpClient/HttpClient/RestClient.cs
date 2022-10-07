@@ -199,6 +199,9 @@ public class RestClient : IRestClient
             if (request.Method == HttpMethod.Get && response.StatusCode == HttpStatusCode.NotFound)
                 return new HttpClientResponse<T>(response, default);
 
+            if(!options.EnsureSuccessStatusCode)
+                return new HttpClientResponse<T>(response, default);
+
             throw new HttpClientException(response);
         }
 
